@@ -53,10 +53,11 @@ class _MyAppState extends State<MyApp>{
         child: HomePage(),
         onWillPop: () async{
           // print('用了？');
-
+          bool temp;
+          print('竟啊啊撒是的阿斯顿 奥迪啊按时撒旦撒$temp');
           /// 弹窗关闭
-          bool temp = await showModal(context,message:'是否关闭');
-          print(temp);
+          temp = await showModal(context,message:'是否关闭');
+          print('搞定啦啦啦啦啦啦$temp');
           return temp;
 
           /// 双击返回关闭
