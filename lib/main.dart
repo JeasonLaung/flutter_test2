@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,41 +13,72 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
+class _MyAppState extends State<MyApp>{
+  Timer timer;
+  int count = 0;
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // print("--" + state.toString());
-    switch (state) {
-      case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。
-        print('不管切前后台都先执行');
-        break;
-      case AppLifecycleState.resumed:// 应用程序可见，前台
-        print('到前台进');
-        break;
-      case AppLifecycleState.paused: // 应用程序不可见，后台
-        print('到后台出');
-        break;
-      case AppLifecycleState.suspending: // 申请将暂时暂停
-        print('不知道傻suspending');
-        break;
-    }
-  }
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   // print("--" + state.toString());
+  //   switch (state) {
+  //     case AppLifecycleState.inactive: // 处于这种状态的应用程序应该假设它们可能在任何时候暂停。
+  //       print('不管切前后台都先执行');
+  //       break;
+  //     case AppLifecycleState.resumed:// 应用程序可见，前台
+  //       print('到前台进');
+  //       break;
+  //     case AppLifecycleState.paused: // 应用程序不可见，后台
+  //       print('到后台出');
+  //       break;
+  //     case AppLifecycleState.suspending: // 申请将暂时暂停
+  //       print('不知道傻suspending');
+  //       break;
+  //   }
+  // }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    // WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      home: WillPopScope(
+        child: HomePage(),
+        onWillPop: () async{
+          // print('用了？');
+
+          /// 弹窗关闭
+          bool temp = await showModal(context,message:'是否关闭');
+          print(temp);
+          return temp;
+
+          /// 双击返回关闭
+          // if(count == 0) {
+          //   Timer(Duration(seconds: 2),() {
+          //     setState(() {
+          //       count = 0;
+          //     });
+          //   });
+          //   setState(() {
+          //     count++;
+          //   });
+          //   print('$count');
+          //   return false;
+          // } else {
+          //   timer?.cancel();
+          //   return true;
+          // }
+          
+          // await showModal(context, message: '是否关闭应用');
+        },
+      )
     );
   }
 }
@@ -63,39 +96,11 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: Text('测试生命周期'),),
       body: Center(
         child: RaisedButton(
-          child: Text('去下一页'),
+          child: Text('弹出框'),
           onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return Material(
-                  borderRadius: BorderRadius.circular(5),
-                  child: Container(
-                    child: Column(
-                    children: <Widget>[
-                      Text('是否退出？'),
-                      Row(
-                        children: <Widget>[
-                          RaisedButton(
-                            child: Text('取消'),
-                            onPressed: () {
-
-                            },
-                          ),
-                      // Text('是否退出？'),
-                      // Text('是否退出？'),
-                      // Text('是否退出？'),
-                      // Text('是否退出？'),
-                      // Text('是否退出？'),
-                      // Text('是否退出？'),
-
-                        ],
-                      )
-                    ],
-                  )),
-                );
-              }
-            );
+            showModal(context,message: '123465798').then((val) {
+              print(val);
+            });
           },
         ),
       ),
@@ -117,4 +122,30 @@ class _SecondPageState extends State<SecondPage> {
       
     );
   }
+}
+
+/// 仿微信小程序API
+Future<bool> showModal(context,{String message}) async{
+  Widget dialog = CupertinoAlertDialog(
+    content: Text(
+      message??"我是一个仿微信小程序的苹果弹窗",
+      style: TextStyle(fontSize: 20),
+    ),
+    actions: <Widget>[
+      CupertinoButton(
+        child: Text("取消"),
+        onPressed: () {
+          Navigator.pop(context, false);
+        },
+      ),
+      CupertinoButton(
+        child: Text("确定"),
+        onPressed: () {
+          Navigator.pop(context, true);
+        },
+      ),
+    ],
+  );
+
+  return await showDialog(context: context, builder: (_) => dialog);
 }
