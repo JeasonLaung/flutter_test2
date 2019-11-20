@@ -29,34 +29,6 @@ class Router {
     /// 返回一个当前页面的key
     return navigatorKey; 
   }
-
-  static Future<bool> showModal({String message}) async{
-/// 仿微信小程序API
-    Widget dialog = CupertinoAlertDialog(
-      content: Text(
-        message??"我是一个仿微信小程序的苹果弹窗",
-        style: TextStyle(fontSize: 20),
-      ),
-      actions: <Widget>[
-        CupertinoButton(
-          child: Text("取消"),
-          onPressed: () {
-            // Navigator.pop(context, false);
-            Router.navigateBack();
-          },
-        ),
-        CupertinoButton(
-          child: Text("确定"),
-          onPressed: () {
-            Router.navigateBack();
-            // Navigator.pop(context, true);
-          },
-        ),
-      ],
-    );
-
-    return await showDialog(context: navigatorKey.currentContext, builder: (_) => dialog);
-  }
 }
 
 class MyApp extends StatefulWidget {
